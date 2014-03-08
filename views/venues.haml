@@ -1,0 +1,26 @@
+.container
+  .content
+    %h2 Venues
+    -if @suser and @suser.admin
+      %a.btn.btn-primary.btn-large{:href => '/venues/create'}
+        Add Venue
+
+    %table.table.table-striped
+      %thead
+        %tr
+          %th Name
+          %th Address
+          %th Longitude
+          %th Latitude
+
+      %tbody
+      ~@venues.each do |venue|
+        %tr
+          %td 
+            %a{:href => '/venue/' << venue['_id'].to_s}=  venue['name']
+          %td= venue['location']['address'] ? venue['location']['address'] : '&nbsp'
+          %td= venue['location']['geo'][0].round(2)
+          %td= venue['location']['geo'][1].round(2)
+
+
+    =pager('/venues/p')

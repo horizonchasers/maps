@@ -1,0 +1,42 @@
+.container
+  .row
+    .col-md-6
+      %h2= @venue['name'].to_s
+      -if !@venue['image'].nil?
+        %p 
+          %image{:src => '/venue/' + @venue['_id'].to_s + '/image'}
+      %p
+        =@venue['location']['address'].to_s
+        %br= @venue['location']['city'].to_s + ' ' + @venue['location']['state'].to_s + ' ' + @venue['location']['postalCode'].to_s
+      %p
+        - if logged_in?
+          %a.btn.btn-primary.btn-large{:href => '/venue/' + @venue['_id'].to_s + '/checkin'}Check In Here
+        - else
+          %a.btn.btn-primary.btn-large{:href => '/login?callback_venue=' + @venue['_id'].to_s }Login First
+      %p
+        =@venue['stats']['usersCount'].ceil.to_s + ' users have checked in here ' + @venue['stats']['checkinsCount'].ceil.to_s + ' times'
+      %p=user_times_at
+      -if logged_in? && @suser.admin
+        %p 
+          %form{:method=>'POST',:action=>'/venue/' + @venue['_id'].to_s + '/image', :enctype=>'multipart/form-data'}
+            %input{:type=>'submit',:value=>'Upload Venue Image'}
+            %input{:type=>'file',:name=>'image'}
+      -if @mayor
+        %p
+          %b Mayor
+          =@mayor['name']
+    .col-md-6
+      %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }
+  .row
+    .col-md-12
+      %h1 Nearby Venues
+  .row
+    - @nearby_venues.each do |nearby|
+      .col-md-3
+        %h2
+          %a{:href => '/venue/' + nearby['_id'].to_s}= nearby['name'].to_s
+        %p
+          =nearby['location']['address'].to_s
+          %br= nearby['location']['city'].to_s + ' ' + nearby['location']['state'].to_s + ' ' + nearby['location']['postalCode'].to_s
+          %a{:href => '/venue/' + nearby['_id'].to_s}
+            %image{:src => '' << gmap_url(nearby, {:height => 150, :width => 150, :zoom => 17}) }
